@@ -7,4 +7,5 @@ https://www.youtube.com/watch?v=RV-QPkPsXs4<br>
 https://mariash.github.io/learn-bosh/
 
 ### altoros
-https://github.com/Altoros/cf-minimal-deployment-aws-script
+jumpbox https://github.com/Altoros/bosh-jumpbox-cookbook <br>
+https://github.com/Altoros/cf-minimal-deployment-aws-script<br>
