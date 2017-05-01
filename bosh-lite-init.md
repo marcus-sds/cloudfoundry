@@ -33,6 +33,7 @@ wget http://download.virtualbox.org/virtualbox/rpm/el/virtualbox.repo
 mv virtualbox.repo /etc/yum.repos.d/
 yum install -y VirtualBox-5.1
 yum -y update
+yum install -y screen
 yum install -y kernel-devel
 
 4. vm up
@@ -40,6 +41,7 @@ yum install -y kernel-devel
 
 #sudo /sbin/vboxconfig
 vagrant init cloudfoundry/bosh-lite;
+screen -S bosh
 
 [root@kkw-bosh-lite ~]# cat Vagrantfile|grep -v "#"|grep -v "^$"
 Vagrant.configure("2") do |config|
