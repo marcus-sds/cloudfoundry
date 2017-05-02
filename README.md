@@ -1,6 +1,8 @@
 # cloudfoundry
 
 ### bosh
+#### bosh terminology
+https://bosh.io/docs/terminology.html<br>
 https://www.youtube.com/watch?v=RV-QPkPsXs4<br>
 
 ### learn bosh
