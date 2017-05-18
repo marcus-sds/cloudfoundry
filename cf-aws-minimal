@@ -1,4 +1,3 @@
-<pre>
 https://github.com/cloudfoundry/cf-release/tree/master/example_manifests
 wget https://github.com/cloudfoundry/cf-release/blob/master/example_manifests/minimal-aws.yml
 
@@ -87,4 +86,3 @@ bosh upload release https://bosh.io/d/github.com/cloudfoundry-incubator/etcd-rel
 
 bosh deployment LOCATION_OF_YOUR_MODIFIED_EXAMPLE_MANIFEST
 bosh deploy
-</pre>
