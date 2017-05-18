@@ -1,0 +1,90 @@
+<pre>
+https://github.com/cloudfoundry/cf-release/tree/master/example_manifests
+wget https://github.com/cloudfoundry/cf-release/blob/master/example_manifests/minimal-aws.yml
+
+0. deploy bosh director
+https://bosh.io/docs/init-aws.html
+
+IP CIDR block: 10.0.0.0/16
+?VPC name: bosh
+?Public subnet: 10.0.0.0/24
+?Availability Zone: us-east-1a
+?Subnet name: public
+?Enable DNS hostnames: Yes
+
+Elastic IP
+
+Security group name: bosh
+?Description: BOSH deployed VMs
+?VPC: Select the “bosh” VPC that you created in Create a Virtual Private Cloud.
+Custom TCP Rule 22 (My IP) SSH access from CLI 
+Custom TCP Rule 6868 (My IP) BOSH Agent access from CLI 
+Custom TCP Rule 25555 (My IP) BOSH Director access from CLI 
+All TCP 0 - 65535 ID of this security group Management and data access 
+All UDP 0 - 65535 ID of this security group Management and data access 
+
+Deploy bosh director
+
+1. bosh security group for "cf logs"
+in 4443 0.0.0.0/0
+
+Replace REPLACE_WITH_DIRECTOR_ID in the example manifest with the bosh director id (return by running "bosh status --uuid")
+Replace REPLACE_WITH_BOSH_SECURITY_GROUP in the example manifest with the security group created for BOSH
+
+2. nat vm creation in bosh subnet
+amzn-ami-vpc-nat
+m1.small
+network bosh, subnet bosh, public ip
+Name : NAT
+security group : nat
+ Type: All traffic
+ Protocol: All
+ Port Range: 0 - 65535
+ Source: Custom IP / 10.0.16.0/24
+
+secret key : bosh
+Change Source/Dest. Check = disable
+
+3. cf subnet
+Name tag: cf
+VPC: bosh
+Availability Zone: Pick the same Availability Zone as the bosh Subnet ?Replace REPLACE_WITH_AZ in the example manifest with the Availability Zone you chose
+CIDR block: 10.0.16.0/24
+
+Replace REPLACE_WITH_PRIVATE_SUBNET_ID in the example manifest with the Subnet ID for the cf Subnet
+Replace REPLACE_WITH_PUBLIC_SUBNET_ID in the example manifest with the Subnet ID for the bosh Subnet
+
+4. cf-public
+security group : cf-public
+ Port Range: 80,443,4443
+
+Replace REPLACE_WITH_ELASTIC_IP in the example manifest with the new IP address
+Replace REPLACE_WITH_PUBLIC_SECURITY_GROUP in the example manifest with the new security group
+
+route53
+?Name: *
+?Type: A - IPv4 address
+?Value: The Elastic IP create above
+
+
+Replace REPLACE_WITH_SYSTEM_DOMAIN with your system domain
+Generate a SSL certificate for your System Domain
+Run "openssl genrsa -out cf.key 1024"
+Run "openssl req -new -key cf.key -out cf.csr" ?For the Common Name, you must enter "*." followed by your System Domain
+Run "openssl x509 -req -in cf.csr -signkey cf.key -out cf.crt"
+Run "cat cf.crt && cat cf.key" and replace REPLACE_WITH_SSL_CERT_AND_KEY with this value.
+
+5. deploy cf
+bosh public stemcells
+bosh download public stemcell light-bosh-stemcell-[GREATEST_NUMBER]-aws-xen-hvm-ubuntu-trusty-go_agent.tgz
+bosh upload stemcell light-bosh-stemcell-[GREATEST_NUMBER]-aws-xen-hvm-ubuntu-trusty-go_agent.tgz
+
+bosh upload release https://bosh.io/d/github.com/cloudfoundry/cf-release
+bosh upload release https://bosh.io/d/github.com/cloudfoundry/diego-release
+bosh upload release https://bosh.io/d/github.com/cloudfoundry/cflinuxfs2-rootfs-release
+bosh upload release https://bosh.io/d/github.com/cloudfoundry/garden-runc-release
+bosh upload release https://bosh.io/d/github.com/cloudfoundry-incubator/etcd-release
+
+bosh deployment LOCATION_OF_YOUR_MODIFIED_EXAMPLE_MANIFEST
+bosh deploy
+</pre>
